@@ -245,6 +245,17 @@ st.markdown("""
         color: #991b1b;
     }
     
+    .badge-aguardando {
+        background: #fef3c7;
+        color: #92400e;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    
     /* Chat Container */
     .chat-container {
         background: white;
@@ -430,8 +441,11 @@ def get_messages(lead_id):
 
 # ==================== FUNÇÕES DE RENDERIZAÇÃO ====================
 
-def render_status_badge(status):
+def render_status_badge(status, aguardando_atendimento=False):
     """Renderiza badge de status"""
+    if aguardando_atendimento:
+        return '<span class="badge badge-aguardando">⏳ AGUARDANDO ATENDIMENTO</span>'
+    
     status_map = {
         "novo": "Novo",
         "qualificado": "Qualificado",
@@ -474,17 +488,29 @@ def render_chat_message(message, sender, timestamp=None):
 
 def render_lead_card(lead, index):
     """Renderiza card de lead"""
-    status_badge = render_status_badge(lead.get('status', 'novo'))
+    # Verifica se está aguardando atendimento humano
+    aguardando = lead.get('status') == 'qualificado'
+    status_badge = render_status_badge(lead.get('status', 'novo'), aguardando)
+    
+    # Extrai informações do lead
+    name = lead.get('name', 'Aguardando qualificação')
+    phone = lead.get('whatsapp_number', 'N/A')
+    score = lead.get('qualification_score', 0) or 0
+    email = lead.get('email', '')
+    
+    # Adiciona email se existir
+    email_line = f'<div class="lead-phone">📧 {email}</div>' if email else ''
     
     return f"""
     <div class="lead-card" id="lead-{index}">
         <div class="lead-header">
             <div>
-                <div class="lead-name">📱 {lead.get('name', 'Sem nome')}</div>
-                <div class="lead-phone">{lead.get('whatsapp_number', 'N/A')}</div>
+                <div class="lead-name">👤 {name}</div>
+                <div class="lead-phone">📱 {phone}</div>
+                {email_line}
             </div>
             <div>
-                <div class="lead-score">⭐ {lead.get('qualification_score', 0)}/100</div>
+                <div class="lead-score">⭐ {score}/100</div>
             </div>
         </div>
         <div style="margin-top: 0.75rem;">
