@@ -675,16 +675,54 @@ with col_leads:
     # Renderiza leads
     if filtered_leads:
         for idx, lead in enumerate(filtered_leads[:10]):  # Mostra até 10 leads
-            # Container clicável para o lead
-            lead_container = st.container()
-            with lead_container:
-                # Renderiza o card
-                st.markdown(render_lead_card(lead, idx), unsafe_allow_html=True)
+            # Extrai dados
+            name = lead.get('name', 'Aguardando qualificação')
+            phone = lead.get('whatsapp_number', 'N/A')
+            email = lead.get('email', '')
+            score = lead.get('qualification_score', 0) or 0
+            status = lead.get('status', 'novo')
+            aguardando = status == 'qualificado'
+            
+            # Container com borda
+            with st.container():
+                col1, col2 = st.columns([3, 1])
                 
-                # Botão invisível para seleção
-                if st.button("Selecionar", key=f"btn_lead_{idx}", use_container_width=True):
+                with col1:
+                    st.markdown(f"**👤 {name}**")
+                    st.caption(f"📱 {phone}")
+                    if email:
+                        st.caption(f"📧 {email}")
+                
+                with col2:
+                    st.markdown(f"**⭐ {score}**/100")
+                
+                # Badge de status
+                if aguardando:
+                    st.warning("⏳ AGUARDANDO ATENDIMENTO")
+                else:
+                    status_labels = {
+                        "novo": ("🆕 NOVO", "info"),
+                        "qualificado": ("✅ QUALIFICADO", "success"),
+                        "em_negociacao": ("💬 EM NEGOCIAÇÃO", "warning"),
+                        "convertido": ("🎯 CONVERTIDO", "success"),
+                        "perdido": ("❌ PERDIDO", "error")
+                    }
+                    label, badge_type = status_labels.get(status, ("DESCONHECIDO", "info"))
+                    if badge_type == "info":
+                        st.info(label)
+                    elif badge_type == "success":
+                        st.success(label)
+                    elif badge_type == "warning":
+                        st.warning(label)
+                    elif badge_type == "error":
+                        st.error(label)
+                
+                # Botão para seleção
+                if st.button("📋 Ver Conversas", key=f"btn_lead_{idx}", use_container_width=True):
                     st.session_state.selected_lead = lead
                     st.rerun()
+                
+                st.markdown("---")  # Separador
     else:
         st.info("Nenhum lead encontrado com os filtros aplicados")
 
