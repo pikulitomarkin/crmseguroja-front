@@ -675,10 +675,16 @@ with col_leads:
     # Renderiza leads
     if filtered_leads:
         for idx, lead in enumerate(filtered_leads[:10]):  # Mostra até 10 leads
-            if st.button(f"lead_{idx}", key=f"btn_lead_{idx}", use_container_width=True):
-                st.session_state.selected_lead = lead
-            
-            st.markdown(render_lead_card(lead, idx), unsafe_allow_html=True)
+            # Container clicável para o lead
+            lead_container = st.container()
+            with lead_container:
+                # Renderiza o card
+                st.markdown(render_lead_card(lead, idx), unsafe_allow_html=True)
+                
+                # Botão invisível para seleção
+                if st.button("Selecionar", key=f"btn_lead_{idx}", use_container_width=True):
+                    st.session_state.selected_lead = lead
+                    st.rerun()
     else:
         st.info("Nenhum lead encontrado com os filtros aplicados")
 
