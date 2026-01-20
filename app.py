@@ -82,11 +82,29 @@ st.markdown("""
     
     [data-testid="stSidebar"] .stDateInput > div > div {
         background-color: #475569 !important;
-        color: white !important;
         border: 1px solid #64748b !important;
     }
     
+    [data-testid="stSidebar"] .stDateInput input {
+        color: white !important;
+        background-color: #475569 !important;
+    }
+    
+    [data-testid="stSidebar"] .stDateInput button {
+        color: white !important;
+    }
+    
     [data-testid="stSidebar"] input {
+        color: white !important;
+        background-color: #475569 !important;
+    }
+    
+    /* Calendar popup */
+    .stDateInput [data-baseweb="calendar"] {
+        background-color: #334155 !important;
+    }
+    
+    .stDateInput [data-baseweb="calendar"] * {
         color: white !important;
     }
     
