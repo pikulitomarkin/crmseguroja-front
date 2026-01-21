@@ -714,7 +714,22 @@ with col_leads:
             email = lead.get('email', '')
             score = lead.get('qualification_score', 0) or 0
             status = lead.get('status', 'novo')
-            aguardando = status == 'qualificado'
+            ia_active = lead.get('status_ia', 1) == 1
+            
+            # Determina badge baseado no status e IA
+            if status == 'qualificado' and ia_active:
+                badge_label = "⏳ AGUARDANDO ATENDIMENTO"
+                badge_type = "warning"
+            elif status == 'em_negociacao' or (status == 'qualificado' and not ia_active):
+                badge_label = "💬 EM ATENDIMENTO"
+                badge_type = "info"
+            else:
+                status_labels = {
+                    "novo": ("🆕 NOVO", "info"),
+                    "convertido": ("🎯 CONVERTIDO", "success"),
+                    "perdido": ("❌ PERDIDO", "error")
+                }
+                badge_label, badge_type = status_labels.get(status, ("DESCONHECIDO", "info"))
             
             # Container com borda
             with st.container():
@@ -730,25 +745,14 @@ with col_leads:
                     st.markdown(f"**⭐ {score}**/100")
                 
                 # Badge de status
-                if aguardando:
-                    st.warning("⏳ AGUARDANDO ATENDIMENTO")
-                else:
-                    status_labels = {
-                        "novo": ("🆕 NOVO", "info"),
-                        "qualificado": ("✅ QUALIFICADO", "success"),
-                        "em_negociacao": ("💬 EM NEGOCIAÇÃO", "warning"),
-                        "convertido": ("🎯 CONVERTIDO", "success"),
-                        "perdido": ("❌ PERDIDO", "error")
-                    }
-                    label, badge_type = status_labels.get(status, ("DESCONHECIDO", "info"))
-                    if badge_type == "info":
-                        st.info(label)
-                    elif badge_type == "success":
-                        st.success(label)
-                    elif badge_type == "warning":
-                        st.warning(label)
-                    elif badge_type == "error":
-                        st.error(label)
+                if badge_type == "info":
+                    st.info(badge_label)
+                elif badge_type == "success":
+                    st.success(badge_label)
+                elif badge_type == "warning":
+                    st.warning(badge_label)
+                elif badge_type == "error":
+                    st.error(badge_label)
                 
                 # Botão para seleção
                 if st.button("📋 Ver Conversas", key=f"btn_lead_{idx}", use_container_width=True):
@@ -820,6 +824,49 @@ with col_chat:
             
             if refresh_button:
                 st.rerun()
+        
+        # ===== BOTÕES DE ENCERRAR CONVERSA =====
+        st.markdown("---")
+        st.markdown("#### 🏁 Encerrar Conversa")
+        
+        col_enc1, col_enc2 = st.columns(2)
+        with col_enc1:
+            if st.button("✅ Venda Concluída", key="btn_convert", use_container_width=True, type="primary"):
+                try:
+                    response = requests.post(
+                        f"{API_URL}/api/leads/{lead.get('id')}/close",
+                        json={"success": True},
+                        timeout=10
+                    )
+                    if response.status_code == 200:
+                        st.success("🎉 Lead convertido com sucesso!")
+                        lead['status'] = 'convertido'
+                        st.session_state.selected_lead = lead
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        st.error(f"❌ Erro: {response.text}")
+                except Exception as e:
+                    st.error(f"❌ Erro de conexão: {str(e)}")
+        
+        with col_enc2:
+            if st.button("❌ Sem Sucesso", key="btn_lost", use_container_width=True):
+                try:
+                    response = requests.post(
+                        f"{API_URL}/api/leads/{lead.get('id')}/close",
+                        json={"success": False},
+                        timeout=10
+                    )
+                    if response.status_code == 200:
+                        st.warning("Lead marcado como perdido")
+                        lead['status'] = 'perdido'
+                        st.session_state.selected_lead = lead
+                        time.sleep(2)
+                        st.rerun()
+                    else:
+                        st.error(f"❌ Erro: {response.text}")
+                except Exception as e:
+                    st.error(f"❌ Erro de conexão: {str(e)}")
         
         # ===== HISTÓRICO DE MENSAGENS =====
         st.markdown("---")
