@@ -3,6 +3,7 @@ Dashboard CRM Seguro JA - Interface Profissional
 Estética inspirada em Evolution API
 """
 import os
+import time
 import streamlit as st
 import pandas as pd
 import requests
@@ -731,11 +732,17 @@ with col_chat:
     
     if 'selected_lead' in st.session_state:
         lead = st.session_state.selected_lead
+        ia_active = lead.get('status_ia', 1) == 1
+        
+        # Card do lead com indicador de IA
+        ia_indicator = "🤖 IA Ativa" if ia_active else "👤 Atendimento Humano"
+        ia_color = "#10b981" if ia_active else "#3b82f6"
         
         st.markdown(f"""
         <div style="background: white; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 1rem;">
             <strong style="font-size: 1.125rem; color: #0f172a;">{lead.get('name', 'Lead')}</strong><br>
-            <span style="color: #64748b; font-size: 0.875rem;">{lead.get('whatsapp_number', 'N/A')}</span>
+            <span style="color: #64748b; font-size: 0.875rem;">{lead.get('whatsapp_number', 'N/A')}</span><br>
+            <span style="background: {ia_color}; color: white; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; margin-top: 0.5rem; display: inline-block;">{ia_indicator}</span>
         </div>
         """, unsafe_allow_html=True)
         
@@ -764,6 +771,46 @@ with col_chat:
         
         chat_html += '</div>'
         st.markdown(chat_html, unsafe_allow_html=True)
+        
+        # ===== ÁREA DE ENVIO DE MENSAGEM =====
+        st.markdown("---")
+        st.markdown("#### ✍️ Enviar Mensagem")
+        
+        # Form para enviar mensagem
+        with st.form(key="message_form", clear_on_submit=True):
+            message_input = st.text_area(
+                "Digite sua mensagem",
+                placeholder="Digite aqui sua mensagem para o lead...",
+                height=100,
+                label_visibility="collapsed"
+            )
+            
+            col_btn1, col_btn2 = st.columns([3, 1])
+            with col_btn1:
+                send_button = st.form_submit_button("📤 Enviar", use_container_width=True, type="primary")
+            with col_btn2:
+                refresh_button = st.form_submit_button("🔄 Atualizar", use_container_width=True)
+            
+            if send_button and message_input.strip():
+                # Envia mensagem via API
+                try:
+                    response = requests.post(
+                        f"{BACKEND_URL}/api/leads/{lead.get('id')}/send-message",
+                        json={"message": message_input},
+                        timeout=30
+                    )
+                    
+                    if response.status_code == 200:
+                        st.success("✅ Mensagem enviada com sucesso!")
+                        time.sleep(1)
+                        st.rerun()
+                    else:
+                        st.error(f"❌ Erro ao enviar: {response.text}")
+                except Exception as e:
+                    st.error(f"❌ Erro de conexão: {str(e)}")
+            
+            if refresh_button:
+                st.rerun()
     else:
         st.markdown("""
         <div class="chat-container">
