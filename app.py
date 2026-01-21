@@ -268,9 +268,10 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         padding: 1.5rem;
-        height: 600px;
+        height: 450px;
         overflow-y: auto;
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        margin-bottom: 1rem;
     }
     
     .chat-message {
@@ -800,7 +801,7 @@ with col_chat:
                 # Envia mensagem via API
                 try:
                     response = requests.post(
-                        f"{BACKEND_URL}/api/leads/{lead.get('id')}/send-message",
+                        f"{API_URL}/api/leads/{lead.get('id')}/send-message",
                         json={"message": message_input},
                         timeout=30
                     )
