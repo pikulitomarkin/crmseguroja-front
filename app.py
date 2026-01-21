@@ -65,14 +65,35 @@ st.markdown("""
         border-radius: 0 8px 8px 0 !important;
         padding: 0.5rem !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
     }
     
-    [data-testid="collapsedControl"]:hover {
+    button[kind="header"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 999999 !important;
+        background: #3b82f6 !important;
+        border-radius: 0 8px 8px 0 !important;
+        padding: 0.5rem !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover,
+    button[kind="header"]:hover {
         background: #2563eb !important;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
     }
     
-    [data-testid="collapsedControl"] svg {
+    [data-testid="collapsedControl"] svg,
+    button[kind="header"] svg {
         color: white !important;
         width: 1.5rem !important;
         height: 1.5rem !important;
