@@ -29,6 +29,9 @@ st.set_page_config(
 if 'selected_lead' not in st.session_state:
     st.session_state.selected_lead = None
 
+if 'last_message_count' not in st.session_state:
+    st.session_state.last_message_count = 0
+
 # ==================== CSS CUSTOMIZADO ====================
 st.markdown("""
 <style>
@@ -51,6 +54,29 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* Botão de toggle da sidebar - sempre visível */
+    [data-testid="collapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 999999 !important;
+        background: #3b82f6 !important;
+        border-radius: 0 8px 8px 0 !important;
+        padding: 0.5rem !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    }
+    
+    [data-testid="collapsedControl"]:hover {
+        background: #2563eb !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    }
+    
+    [data-testid="collapsedControl"] svg {
+        color: white !important;
+        width: 1.5rem !important;
+        height: 1.5rem !important;
+    }
     
     /* Background principal */
     .main {
@@ -780,6 +806,10 @@ with col_chat:
                     )
                     
                     if response.status_code == 200:
+                        # Atualiza o lead no session_state para refletir status_ia = 0
+                        lead['status_ia'] = 0
+                        st.session_state.selected_lead = lead
+                        
                         st.success("✅ Mensagem enviada com sucesso!")
                         time.sleep(1)
                         st.rerun()
@@ -793,15 +823,24 @@ with col_chat:
         
         # ===== HISTÓRICO DE MENSAGENS =====
         st.markdown("---")
-        st.markdown("#### 📜 Histórico")
+        
+        col_hist1, col_hist2 = st.columns([3, 1])
+        with col_hist1:
+            st.markdown("#### 📜 Histórico")
+        with col_hist2:
+            # Auto-refresh a cada 5 segundos
+            if st.button("🔄 Auto", key="auto_refresh", help="Atualiza automaticamente"):
+                time.sleep(5)
+                st.rerun()
         
         # Busca mensagens
-        messages = get_messages(lead.get('id')) if api_status else [
-            {"sender": "user", "message": "Olá, gostaria de informações sobre seguro auto", "created_at": "2026-01-19T10:30:00"},
-            {"sender": "bot", "message": "Olá! Fico feliz em ajudar com informações sobre seguro auto. Para oferecer a melhor cotação, preciso de algumas informações. Qual é a marca e modelo do seu veículo?", "created_at": "2026-01-19T10:30:15"},
-            {"sender": "user", "message": "É um Honda Civic 2022", "created_at": "2026-01-19T10:31:00"},
-            {"sender": "bot", "message": "Excelente! O Honda Civic é um ótimo veículo. Você é o proprietário do veículo?", "created_at": "2026-01-19T10:31:10"}
-        ]
+        messages = get_messages(lead.get('id')) if api_status else []
+        
+        # Detecta novas mensagens e notifica
+        current_count = len(messages)
+        if current_count > st.session_state.last_message_count and st.session_state.last_message_count > 0:
+            st.success(f"🔔 {current_count - st.session_state.last_message_count} nova(s) mensagem(ns)!")
+        st.session_state.last_message_count = current_count
         
         # Container de chat
         chat_html = '<div class="chat-container">'
