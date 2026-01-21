@@ -595,15 +595,29 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Força sidebar sempre visível - solução definitiva
+# Força sidebar sempre visível e completamente expandida
 st.markdown("""
 <style>
-/* Força sidebar sempre visível */
+/* Força sidebar sempre visível e expandida */
 section[data-testid="stSidebar"] {
     display: block !important;
     visibility: visible !important;
     transform: translateX(0) !important;
     margin-left: 0 !important;
+    left: 0 !important;
+    width: 21rem !important;
+    min-width: 21rem !important;
+    max-width: 21rem !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    width: 21rem !important;
+    min-width: 21rem !important;
+}
+
+section[data-testid="stSidebar"] .css-1lcbmhc,
+section[data-testid="stSidebar"] .css-1544g2n {
+    width: 21rem !important;
 }
 
 /* Esconde botão de collapse para evitar problema */
@@ -614,7 +628,9 @@ button[kind="header"][data-testid*="sidebar"],
 }
 
 /* Garante que o conteúdo principal não sobreponha */
-section[data-testid="stSidebar"] + div {
+.main .block-container,
+section[data-testid="stSidebar"] ~ div,
+[data-testid="stAppViewContainer"] > section:last-child {
     margin-left: 21rem !important;
 }
 </style>
