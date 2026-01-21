@@ -99,6 +99,17 @@ st.markdown("""
         height: 1.5rem !important;
     }
     
+    /* Menu hamburguer do Streamlit */
+    section[data-testid="stSidebar"] > div:first-child {
+        visibility: visible !important;
+    }
+    
+    /* Força exibição do botão de colapsar */
+    .css-1dp5vir {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
     /* Background principal */
     .main {
         background-color: #f8fafc;
@@ -581,6 +592,38 @@ st.markdown("""
     <div class="dashboard-title">🛡️ Seguro JA | CRM Dashboard</div>
     <div class="dashboard-subtitle">Sistema Inteligente de Gestão de Leads com IA</div>
 </div>
+""", unsafe_allow_html=True)
+
+# Botão customizado para abrir sidebar (sempre visível)
+st.markdown("""
+<style>
+.custom-menu-button {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    z-index: 999999;
+    background-color: #0e1117;
+    color: white;
+    border: 2px solid #4CAF50;
+    border-radius: 5px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.custom-menu-button:hover {
+    background-color: #4CAF50;
+}
+</style>
+<button class="custom-menu-button" onclick="
+    const sidebar = window.parent.document.querySelector('section[data-testid=stSidebar]');
+    if (sidebar) {
+        sidebar.style.marginLeft = '0px';
+        sidebar.style.display = 'block';
+    }
+    const collapseBtn = window.parent.document.querySelector('[data-testid=collapsedControl]');
+    if (collapseBtn) collapseBtn.click();
+">☰</button>
 """, unsafe_allow_html=True)
 
 # Verifica conexão com API
