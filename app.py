@@ -752,34 +752,7 @@ with col_chat:
         </div>
         """, unsafe_allow_html=True)
         
-        # Busca mensagens
-        messages = get_messages(lead.get('id')) if api_status else [
-            {"sender": "user", "message": "Olá, gostaria de informações sobre seguro auto", "created_at": "2026-01-19T10:30:00"},
-            {"sender": "bot", "message": "Olá! Fico feliz em ajudar com informações sobre seguro auto. Para oferecer a melhor cotação, preciso de algumas informações. Qual é a marca e modelo do seu veículo?", "created_at": "2026-01-19T10:30:15"},
-            {"sender": "user", "message": "É um Honda Civic 2022", "created_at": "2026-01-19T10:31:00"},
-            {"sender": "bot", "message": "Excelente! O Honda Civic é um ótimo veículo. Você é o proprietário do veículo?", "created_at": "2026-01-19T10:31:10"}
-        ]
-        
-        # Container de chat
-        chat_html = '<div class="chat-container">'
-        
-        if messages:
-            for msg in messages:
-                sender_type = "user" if msg.get('sender') == 'user' else "bot"
-                timestamp = msg.get('created_at', '')[:16] if msg.get('created_at') else ''
-                chat_html += render_chat_message(
-                    msg.get('message', ''),
-                    sender_type,
-                    timestamp
-                )
-        else:
-            chat_html += '<div style="text-align: center; color: #94a3b8; padding: 2rem;">Nenhuma mensagem ainda</div>'
-        
-        chat_html += '</div>'
-        st.markdown(chat_html, unsafe_allow_html=True)
-        
         # ===== ÁREA DE ENVIO DE MENSAGEM =====
-        st.markdown("---")
         st.markdown("#### ✍️ Enviar Mensagem")
         
         # Form para enviar mensagem
@@ -817,6 +790,36 @@ with col_chat:
             
             if refresh_button:
                 st.rerun()
+        
+        # ===== HISTÓRICO DE MENSAGENS =====
+        st.markdown("---")
+        st.markdown("#### 📜 Histórico")
+        
+        # Busca mensagens
+        messages = get_messages(lead.get('id')) if api_status else [
+            {"sender": "user", "message": "Olá, gostaria de informações sobre seguro auto", "created_at": "2026-01-19T10:30:00"},
+            {"sender": "bot", "message": "Olá! Fico feliz em ajudar com informações sobre seguro auto. Para oferecer a melhor cotação, preciso de algumas informações. Qual é a marca e modelo do seu veículo?", "created_at": "2026-01-19T10:30:15"},
+            {"sender": "user", "message": "É um Honda Civic 2022", "created_at": "2026-01-19T10:31:00"},
+            {"sender": "bot", "message": "Excelente! O Honda Civic é um ótimo veículo. Você é o proprietário do veículo?", "created_at": "2026-01-19T10:31:10"}
+        ]
+        
+        # Container de chat
+        chat_html = '<div class="chat-container">'
+        
+        if messages:
+            for msg in messages:
+                sender_type = "user" if msg.get('sender') == 'user' else "bot"
+                timestamp = msg.get('created_at', '')[:16] if msg.get('created_at') else ''
+                chat_html += render_chat_message(
+                    msg.get('message', ''),
+                    sender_type,
+                    timestamp
+                )
+        else:
+            chat_html += '<div style="text-align: center; color: #94a3b8; padding: 2rem;">Nenhuma mensagem ainda</div>'
+        
+        chat_html += '</div>'
+        st.markdown(chat_html, unsafe_allow_html=True)
     else:
         st.markdown("""
         <div class="chat-container">
