@@ -595,75 +595,30 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Botão customizado para abrir sidebar com JavaScript mais agressivo
-components.html("""
+# Força sidebar sempre visível - solução definitiva
+st.markdown("""
 <style>
-.sidebar-toggle {
-    position: fixed;
-    left: 10px;
-    top: 10px;
-    z-index: 999999;
-    background-color: #0e1117;
-    color: white;
-    border: 2px solid #4CAF50;
-    border-radius: 5px;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-    font-family: sans-serif;
+/* Força sidebar sempre visível */
+section[data-testid="stSidebar"] {
+    display: block !important;
+    visibility: visible !important;
+    transform: translateX(0) !important;
+    margin-left: 0 !important;
 }
-.sidebar-toggle:hover {
-    background-color: #4CAF50;
+
+/* Esconde botão de collapse para evitar problema */
+[data-testid="collapsedControl"],
+button[kind="header"][data-testid*="sidebar"],
+.css-1dp5vir {
+    display: none !important;
+}
+
+/* Garante que o conteúdo principal não sobreponha */
+section[data-testid="stSidebar"] + div {
+    margin-left: 21rem !important;
 }
 </style>
-<button class="sidebar-toggle" onclick="toggleSidebar()">☰ Menu</button>
-<script>
-function toggleSidebar() {
-    // Tenta múltiplas estratégias
-    const parentDoc = window.parent.document;
-    
-    // Estratégia 1: Buscar e clicar no botão de collapse
-    const selectors = [
-        '[data-testid="collapsedControl"]',
-        'button[kind="header"]',
-        '[data-testid="stSidebarCollapsedControl"]',
-        'button[class*="collapsedControl"]',
-        'section[data-testid="stSidebar"] button',
-        '.css-1dp5vir'
-    ];
-    
-    for (const selector of selectors) {
-        const btn = parentDoc.querySelector(selector);
-        if (btn) {
-            console.log('Found button with selector:', selector);
-            btn.click();
-            return;
-        }
-    }
-    
-    // Estratégia 2: Manipular CSS diretamente
-    const sidebar = parentDoc.querySelector('section[data-testid="stSidebar"]');
-    if (sidebar) {
-        console.log('Manipulating sidebar CSS directly');
-        sidebar.style.transform = 'translateX(0)';
-        sidebar.style.marginLeft = '0px';
-        sidebar.style.display = 'block';
-        sidebar.style.visibility = 'visible';
-    }
-    
-    // Estratégia 3: Disparar evento de click em qualquer botão na sidebar
-    const allButtons = parentDoc.querySelectorAll('button');
-    allButtons.forEach(btn => {
-        const ariaLabel = btn.getAttribute('aria-label');
-        if (ariaLabel && (ariaLabel.includes('sidebar') || ariaLabel.includes('menu'))) {
-            console.log('Clicking button with aria-label:', ariaLabel);
-            btn.click();
-        }
-    });
-}
-</script>
-""", height=0)
+""", unsafe_allow_html=True)
 
 # Verifica conexão com API
 api_status = get_api_health()
