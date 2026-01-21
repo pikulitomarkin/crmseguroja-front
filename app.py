@@ -842,23 +842,32 @@ with col_chat:
             st.success(f"🔔 {current_count - st.session_state.last_message_count} nova(s) mensagem(ns)!")
         st.session_state.last_message_count = current_count
         
-        # Container de chat
-        chat_html = '<div class="chat-container">'
-        
-        if messages:
-            for msg in messages:
-                sender_type = "user" if msg.get('sender') == 'user' else "bot"
-                timestamp = msg.get('created_at', '')[:16] if msg.get('created_at') else ''
-                chat_html += render_chat_message(
-                    msg.get('message', ''),
-                    sender_type,
-                    timestamp
-                )
-        else:
-            chat_html += '<div style="text-align: center; color: #94a3b8; padding: 2rem;">Nenhuma mensagem ainda</div>'
-        
-        chat_html += '</div>'
-        st.markdown(chat_html, unsafe_allow_html=True)
+        # Container de chat com componentes nativos
+        chat_container = st.container()
+        with chat_container:
+            if messages:
+                for msg in messages:
+                    sender = msg.get('sender', 'user')
+                    message_text = msg.get('message', '')
+                    timestamp = msg.get('created_at', '')[:16] if msg.get('created_at') else ''
+                    
+                    # Mensagem do usuário (alinhada à direita)
+                    if sender == 'user':
+                        col1, col2 = st.columns([1, 3])
+                        with col2:
+                            st.info(f"💬 **Cliente:** {message_text}")
+                            st.caption(timestamp)
+                    # Mensagem do bot/humano (alinhada à esquerda)
+                    else:
+                        col1, col2 = st.columns([3, 1])
+                        with col1:
+                            if sender == 'human':
+                                st.success(f"👤 **Você:** {message_text}")
+                            else:
+                                st.warning(f"🤖 **Assistente:** {message_text}")
+                            st.caption(timestamp)
+            else:
+                st.info("Nenhuma mensagem ainda")
     else:
         st.markdown("""
         <div class="chat-container">
