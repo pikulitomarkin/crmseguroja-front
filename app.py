@@ -735,7 +735,7 @@ with col_leads:
 with col_chat:
     st.markdown("### 💬 Histórico de Conversas")
     
-    if 'selected_lead' in st.session_state:
+    if 'selected_lead' in st.session_state and st.session_state.selected_lead is not None:
         lead = st.session_state.selected_lead
         ia_active = lead.get('status_ia', 1) == 1
         
