@@ -56,6 +56,13 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
+    /* Esconde a barra de status "Running/Stop" */
+    .stStatusWidget {display: none !important;}
+    [data-testid="stStatusWidget"] {display: none !important;}
+    div[data-testid="stStatusWidget"] {display: none !important;}
+    .stApp > header {display: none !important;}
+    .stDeployButton {display: none !important;}
+    
     /* Botão de toggle da sidebar - sempre visível */
     [data-testid="collapsedControl"] {
         display: flex !important;
