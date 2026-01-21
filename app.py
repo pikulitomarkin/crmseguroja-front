@@ -595,7 +595,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Força sidebar sempre visível e completamente expandida
+# Força sidebar sempre visível e layout otimizado
 st.markdown("""
 <style>
 /* Força sidebar sempre visível e expandida */
@@ -608,6 +608,7 @@ section[data-testid="stSidebar"] {
     width: 21rem !important;
     min-width: 21rem !important;
     max-width: 21rem !important;
+    z-index: 999;
 }
 
 section[data-testid="stSidebar"] > div {
@@ -627,11 +628,40 @@ button[kind="header"][data-testid*="sidebar"],
     display: none !important;
 }
 
-/* Garante que o conteúdo principal não sobreponha */
-.main .block-container,
-section[data-testid="stSidebar"] ~ div,
-[data-testid="stAppViewContainer"] > section:last-child {
+/* Ajusta conteúdo principal para não sobrepor sidebar */
+.main .block-container {
+    margin-left: 0 !important;
+    padding-left: 3rem !important;
+    padding-right: 3rem !important;
+    max-width: 100% !important;
+}
+
+[data-testid="stAppViewContainer"] > section:nth-child(2) {
     margin-left: 21rem !important;
+    padding-left: 2rem !important;
+}
+
+div[data-testid="stVerticalBlock"] > div:first-child {
+    padding-top: 0 !important;
+}
+
+/* Ajusta métricas e cards */
+[data-testid="stMetric"] {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* Melhora espaçamento geral */
+.stMarkdown {
+    margin-bottom: 1rem;
+}
+
+/* Cards de leads */
+div[style*="padding: 1.5rem"] {
+    margin-bottom: 1rem;
 }
 </style>
 """, unsafe_allow_html=True)
