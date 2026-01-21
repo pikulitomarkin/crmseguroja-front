@@ -24,6 +24,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ==================== INICIALIZAÇÃO SESSION STATE ====================
+# Inicializa variáveis do session_state para evitar KeyError
+if 'selected_lead' not in st.session_state:
+    st.session_state.selected_lead = None
+
 # ==================== CSS CUSTOMIZADO ====================
 st.markdown("""
 <style>
