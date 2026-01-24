@@ -42,6 +42,32 @@ def get_logo_base64():
         print(f"Erro ao carregar logo: {e}")
         return ""
 
+def get_login_logo_base64():
+    """Carrega a logo de login em base64"""
+    try:
+        # Tenta diferentes caminhos possíveis
+        possible_paths = [
+            Path(__file__).parent.parent / "logoseguroja.jpg",
+            Path(__file__).parent / "logoseguroja.jpg",
+            Path("logoseguroja.jpg"),
+            Path("../logoseguroja.jpg")
+        ]
+        
+        for logo_path in possible_paths:
+            if logo_path.exists():
+                with open(logo_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode()
+        
+        # Se não encontrar a imagem, retorna string vazia
+        return ""
+    except Exception as e:
+        print(f"Erro ao carregar logo de login: {e}")
+        return ""
+
+def check_login(username: str, password: str) -> bool:
+    """Verifica as credenciais de login"""
+    return username == "thiago" and password == "thiago2026"
+
 # ==================== CONFIGURAÇÃO DA PÁGINA ====================
 st.set_page_config(
     page_title="Seguro JA | CRM Dashboard",
@@ -52,6 +78,9 @@ st.set_page_config(
 
 # ==================== INICIALIZAÇÃO SESSION STATE ====================
 # Inicializa variáveis do session_state para evitar KeyError
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
 if 'selected_lead' not in st.session_state:
     st.session_state.selected_lead = None
 
@@ -619,6 +648,126 @@ def render_lead_card(lead, index):
 
 # ==================== INTERFACE PRINCIPAL ====================
 
+# ==================== TELA DE LOGIN ====================
+if not st.session_state.logged_in:
+    # CSS específico para tela de login
+    st.markdown("""
+    <style>
+        /* Esconde sidebar na tela de login */
+        [data-testid="stSidebar"] {
+            display: none !important;
+        }
+        
+        /* Centraliza conteúdo */
+        .main .block-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        /* Container de login */
+        .login-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .login-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+        
+        .login-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        /* Inputs de login */
+        .stTextInput > div > div > input {
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Botão de login */
+        .stButton > button {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            margin-top: 1rem;
+        }
+        
+        .stButton > button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # Container centralizado
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        # Logo
+        login_logo = get_login_logo_base64()
+        if login_logo:
+            st.markdown(f"""
+            <div class="login-container">
+                <img src="data:image/jpeg;base64,{login_logo}" class="login-logo"/>
+                <div class="login-title">seguroJa</div>
+                <div class="login-subtitle">CRM Dashboard</div>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+            <div class="login-container">
+                <div class="login-title">🛡️ seguroJa</div>
+                <div class="login-subtitle">CRM Dashboard</div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Formulário de login
+        with st.form("login_form"):
+            username = st.text_input("Usuário", placeholder="Digite seu usuário")
+            password = st.text_input("Senha", type="password", placeholder="Digite sua senha")
+            submit = st.form_submit_button("Entrar")
+            
+            if submit:
+                if check_login(username, password):
+                    st.session_state.logged_in = True
+                    st.rerun()
+                else:
+                    st.error("❌ Usuário ou senha incorretos")
+    
+    st.stop()
+
+# ==================== DASHBOARD (após login) ====================
 # Header principal
 logo_base64 = get_logo_base64()
 if logo_base64:
