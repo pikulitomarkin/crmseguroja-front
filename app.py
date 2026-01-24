@@ -626,7 +626,7 @@ if logo_base64:
     <div class="dashboard-header">
         <div class="dashboard-title">
             <img src="data:image/jpeg;base64,{logo_base64}" style="height: 40px; margin-right: 10px; vertical-align: middle;"/>
-            Seguro JA | CRM Dashboard
+            CRM Dashboard
         </div>
         <div class="dashboard-subtitle">Sistema Inteligente de Gestão de Leads com IA</div>
     </div>
