@@ -544,14 +544,17 @@ def get_leads_stats():
         return None
 
 def get_leads(status=None, limit=50):
-    """Obtém lista de leads via API"""
+    """Obtém lista de leads via API - apenas clientes NOVOS (não existentes)"""
     try:
         params = {"limit": limit}
         if status:
             params["status"] = status
         response = requests.get(f"{API_URL}/api/leads", params=params, timeout=10)
         if response.status_code == 200:
-            return response.json()
+            all_leads = response.json()
+            # Filtra apenas clientes novos (não clientes existentes)
+            new_leads = [lead for lead in all_leads if lead.get('customer_type') != 'existente']
+            return new_leads
         return []
     except:
         return []
@@ -942,7 +945,7 @@ with st.sidebar:
     st.markdown("### 📞 Suporte")
     st.markdown("**Seguro JA**")
     st.markdown("📧 contato@seguroja.com.br")
-    st.markdown("📱 (11) 99999-9999")
+    st.markdown("📱 (11) 95199-0814")
     st.markdown("⏰ Seg-Sex: 8h às 18h")
     
     st.markdown("---")
