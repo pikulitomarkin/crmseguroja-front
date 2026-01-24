@@ -676,25 +676,34 @@ if not st.session_state.logged_in:
             text-align: center;
             max-width: 400px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         .login-logo {
             width: 150px;
             height: auto;
-            margin-bottom: 1rem;
+            margin: 0 auto 1rem auto;
+            display: block;
         }
         
         .login-title {
             font-size: 2rem;
             font-weight: 600;
             color: #1e293b;
-            margin-bottom: 0.5rem;
+            margin: 0.5rem auto;
+            text-align: center;
+            width: 100%;
         }
         
         .login-subtitle {
             color: #64748b;
-            margin-bottom: 2rem;
+            margin: 0.5rem auto 2rem auto;
             font-size: 0.95rem;
+            text-align: center;
+            width: 100%;
         }
         
         /* Inputs de login */
@@ -734,21 +743,21 @@ if not st.session_state.logged_in:
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
-        # Logo
+        # Logo e título
         login_logo = get_login_logo_base64()
         if login_logo:
             st.markdown(f"""
-            <div class="login-container">
-                <img src="data:image/jpeg;base64,{login_logo}" class="login-logo"/>
-                <div class="login-title">seguroJa</div>
-                <div class="login-subtitle">CRM Dashboard</div>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <img src="data:image/jpeg;base64,{login_logo}" style="width: 150px; height: auto; margin: 0 auto 1rem auto; display: block;"/>
+                <div style="font-size: 2rem; font-weight: 600; color: #1e293b; margin: 0.5rem 0;">seguroJa</div>
+                <div style="color: #64748b; font-size: 0.95rem; margin-bottom: 2rem;">CRM Dashboard</div>
             </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-            <div class="login-container">
-                <div class="login-title">🛡️ seguroJa</div>
-                <div class="login-subtitle">CRM Dashboard</div>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 2rem; font-weight: 600; color: #1e293b; margin: 0.5rem 0;">🛡️ seguroJa</div>
+                <div style="color: #64748b; font-size: 0.95rem; margin-bottom: 2rem;">CRM Dashboard</div>
             </div>
             """, unsafe_allow_html=True)
         
