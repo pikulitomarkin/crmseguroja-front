@@ -4,18 +4,43 @@ Estética inspirada em Evolution API
 """
 import os
 import time
+import base64
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import requests
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from pathlib import Path
 
 # Carrega variáveis de ambiente
 load_dotenv()
 
 # Configuração da API
 API_URL = os.getenv("API_URL", "http://localhost:8000")
+
+# ==================== FUNÇÕES AUXILIARES ====================
+def get_logo_base64():
+    """Carrega a logo em base64"""
+    try:
+        # Tenta diferentes caminhos possíveis
+        possible_paths = [
+            Path(__file__).parent.parent / "seguroja.jpg",
+            Path(__file__).parent / "seguroja.jpg",
+            Path("seguroja.jpg"),
+            Path("../seguroja.jpg")
+        ]
+        
+        for logo_path in possible_paths:
+            if logo_path.exists():
+                with open(logo_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode()
+        
+        # Se não encontrar a imagem, retorna string vazia
+        return ""
+    except Exception as e:
+        print(f"Erro ao carregar logo: {e}")
+        return ""
 
 # ==================== CONFIGURAÇÃO DA PÁGINA ====================
 st.set_page_config(
@@ -595,12 +620,24 @@ def render_lead_card(lead, index):
 # ==================== INTERFACE PRINCIPAL ====================
 
 # Header principal
-st.markdown("""
-<div class="dashboard-header">
-    <div class="dashboard-title">🛡️ Seguro JA | CRM Dashboard</div>
-    <div class="dashboard-subtitle">Sistema Inteligente de Gestão de Leads com IA</div>
-</div>
-""", unsafe_allow_html=True)
+logo_base64 = get_logo_base64()
+if logo_base64:
+    st.markdown(f"""
+    <div class="dashboard-header">
+        <div class="dashboard-title">
+            <img src="data:image/jpeg;base64,{logo_base64}" style="height: 40px; margin-right: 10px; vertical-align: middle;"/>
+            Seguro JA | CRM Dashboard
+        </div>
+        <div class="dashboard-subtitle">Sistema Inteligente de Gestão de Leads com IA</div>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div class="dashboard-header">
+        <div class="dashboard-title">🛡️ Seguro JA | CRM Dashboard</div>
+        <div class="dashboard-subtitle">Sistema Inteligente de Gestão de Leads com IA</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Força sidebar sempre visível e layout otimizado
 st.markdown("""
