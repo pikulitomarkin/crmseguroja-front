@@ -945,7 +945,7 @@ with st.sidebar:
     st.markdown("### 📞 Suporte")
     st.markdown("**Seguro JA**")
     st.markdown("📧 contato@seguroja.com.br")
-    st.markdown("📱 (11) 95199-0814")
+    st.markdown("📱 (11) 96520-9976")
     st.markdown("⏰ Seg-Sex: 8h às 18h")
     
     st.markdown("---")
